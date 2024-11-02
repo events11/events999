@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var screenRoute = PagewaScreen.screenRoute;
     return MaterialApp(
         title: 'MessageMe app',
         theme: ThemeData(
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
           WelcomeScreen.screenRoute: (context) => const WelcomeScreen(),
           RegistrationScreen.screenRoute: (context) =>
               const RegistrationScreen(),
-          SignInScreen.screenRoute: (context) => const SignInScreen()
+          SignInScreen.screenRoute: (context) => const SignInScreen(),
+          PagewaScreen.screenRoute: (context) => const PagewaScreen(),
         });
   }
 }

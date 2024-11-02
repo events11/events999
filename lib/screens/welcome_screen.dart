@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/screens/pagewa_screen.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
 
@@ -46,7 +47,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Mybutton(
                 color: const Color.fromARGB(255, 210, 164, 38),
                 title: 'Guest',
-                onpressed: () {})
+                onpressed: () {
+                  Navigator.pushNamed(context, PagewaScreen.screenRoute);
+                })
           ],
         ),
       ),
