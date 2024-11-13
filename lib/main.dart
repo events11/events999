@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_world/firebase_options.dart';
+
 // ignore: unused_import
 import 'screens/pagewa_screen.dart';
 import 'screens/signup_screen.dart';
@@ -14,6 +15,7 @@ void main() async {
   );
 
   // ignore: prefer_const_constructors
+
   runApp(MyApp());
 }
 
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        // home: registrationScreen(),
+        //home: const Auth(),
         initialRoute: WelcomeScreen.screenRoute,
         routes: {
           WelcomeScreen.screenRoute: (context) => const WelcomeScreen(),
