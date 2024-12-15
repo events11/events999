@@ -221,7 +221,6 @@ class _PagewaScreenState extends State<PagewaScreen> {
           break;
       }
 
-
       // تنفيذ الاستعلام وجلب البيانات
       QuerySnapshot querySnapshot = await query.get();
 
@@ -267,23 +266,23 @@ class _PagewaScreenState extends State<PagewaScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: const Text('1'),
+              title: const Text('Personal Events'),
               onTap: () => _filterByCategory(1, context), // تصحيح القيمة هنا
             ),
             ListTile(
-              title: const Text('2'),
+              title: const Text('Public Events'),
               onTap: () => _filterByCategory(2, context),
             ),
             ListTile(
-              title: const Text('3'),
+              title: const Text('Organizational Events'),
               onTap: () => _filterByCategory(3, context),
             ),
             ListTile(
-              title: const Text('4'),
+              title: const Text('Recreational Events'),
               onTap: () => _filterByCategory(4, context),
             ),
             ListTile(
-              title: const Text('عرض جميع المنشورات'),
+              title: const Text('All Events'),
               onTap: () => _filterByCategory(
                   5, context), // التصنيف 5 لعرض جميع المنشورات
             ),
@@ -325,6 +324,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
                 crossAxisAlignment:
                     CrossAxisAlignment.start, // محاذاة النص والصورة من البداية
                 children: [
+                  
                   // النص (content)
                   Text(
                     document['content'] ?? 'محتوى غير متوفر',
@@ -361,7 +361,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
                   ] else ...[
                     // عرض نص بديل في حال لم يكن الموقع متوفرًا
                     Text(
-                      'موقع غير متوفر',
+                  '',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 14,
@@ -369,6 +369,16 @@ class _PagewaScreenState extends State<PagewaScreen> {
                     ),
                   ],
                   const SizedBox(height: 5),
+Text(
+  document['rule'] ??'',
+  style: const TextStyle(
+    fontSize: 17,
+    fontWeight: FontWeight.bold,
+    color: Color.fromARGB(255, 206, 156, 30), // اللون الأزرق للنص
+  ),
+),
+
+            
                   // الصورة
                   SizedBox(
                     width: double.infinity, // عرض كامل للصورة
@@ -403,10 +413,10 @@ class _PagewaScreenState extends State<PagewaScreen> {
         final DateFormat formatter = DateFormat('dd/MM/yyyy hh:mm a');
         return formatter.format(dateTime); // إعادة تنسيق التاريخ
       } else {
-        return 'تاريخ غير صالح';
+        return '';
       }
     } catch (e) {
-      return 'تاريخ غير صالح';
+      return '';
     }
   }
 

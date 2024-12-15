@@ -22,6 +22,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _filterByCategory = TextEditingController();
   final TextEditingController _currentFilter = TextEditingController();
+  final TextEditingController _ruleController = TextEditingController();
   File? _pickedFile; // لتخزين الصورة أو الفيديو
   DateTime? _selectedDateTime; // لتخزين التاريخ والوقت المختار
   // دالة لاختيار التاريخ والوقت
@@ -101,6 +102,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   prefixIcon: Icon(Icons.location_on),
                 ),
               ),
+             
+              
+       
               const SizedBox(height: 16.0),
               // زر تحديد الوقت
               GestureDetector(
@@ -115,8 +119,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                   ),
                   child: Text(
                     _selectedDateTime == null
-                        ? (S.of(context).Addalocation)
-                        : 'الوقت المحدد: ${_selectedDateTime!.toLocal().toString().split(' ')[0]} ${_selectedDateTime!.toLocal().toString().split(' ')[1].substring(0, 5)}',
+                        ? (S.of(context).Timeanddate)
+                        : ': ${_selectedDateTime!.toLocal().toString().split(' ')[0]} ${_selectedDateTime!.toLocal().toString().split(' ')[1].substring(0, 5)}',
                     style: TextStyle(
                         color: const Color.fromARGB(255, 1, 3, 4),
                         fontSize: 16),
@@ -125,16 +129,100 @@ class _CreatePostPageState extends State<CreatePostPage> {
               ),
               const SizedBox(height: 16.0),
               //
-              TextField(
-                controller: _currentFilter,
-                decoration: InputDecoration(
-                  hintText: (S.of(context).Addalocation), //
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  prefixIcon: Icon(Icons.category),
-                ),
-              ),
+          TextField(
+  controller: _ruleController,
+  maxLines: null, // السماح بخطوط متعددة
+  decoration: InputDecoration(
+    hintText: "Set Rules and Ticket Price (Optional)",
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30.0),
+    ),
+  // النص سيكون باللون الأصفر
+  ),
+),
+
+
+
+ const SizedBox(height: 16.0),
+
+              ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30.0),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+  ),
+  onPressed: () async {
+    // عرض القائمة المنبثقة
+    final selectedOption = await showMenu<int>(
+      context: context,
+      position: RelativeRect.fromLTRB(0, 100, 0, 0), // ضبط الموضع حسب الحاجة
+      items: [
+        PopupMenuItem<int>(
+          value: 1, // قيمة الخيار الأول
+          child: Row(
+            children: [
+              Icon(Icons.person), // أيقونة بجانب النص
+              SizedBox(width: 10), // مسافة بين الأيقونة والنص
+              Text('Personal Events'), // النص
+            ],
+          ),
+        ),
+        PopupMenuItem<int>(
+          value: 2, // قيمة الخيار الثاني
+          child: Row(
+            children: [
+              Icon(Icons.people), // أيقونة بجانب النص
+              SizedBox(width: 10),
+              Text('Public Events'), // النص
+            ],
+          ),
+        ),
+        PopupMenuItem<int>(
+          value: 3, // قيمة الخيار الثالث
+          child: Row(
+            children: [
+              Icon(Icons.business), // أيقونة بجانب النص
+              SizedBox(width: 10),
+              Text('Organizational Events'), // النص
+            ],
+          ),
+        ),
+        PopupMenuItem<int>(
+          value: 4, // قيمة الخيار الرابع
+          child: Row(
+            children: [
+              Icon(Icons.beach_access), // أيقونة بجانب النص
+              SizedBox(width: 10),
+              Text('Recreational Events'), // النص
+            ],
+          ),
+        ),
+      ],
+    );
+
+    // إذا تم اختيار خيار
+     if (selectedOption != null) {
+      setState(() {
+        // إرسال القيمة المختارة إلى _currentFilter
+        _currentFilter.text = '$selectedOption';  // يتم عرض الرقم مباشرة داخل TextField
+      });
+    }
+  },
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(Icons.category, color: Colors.white),
+      SizedBox(width: 10),
+      Text(
+        _currentFilter.text.isEmpty ? 'Select Event Type' : _currentFilter.text,
+        style: TextStyle(fontSize: 16),
+      ),
+    ],
+  ),
+),
+
+             
 
               // إضافة صورة/فيديو
               /*if (_pickedFile != null)
@@ -280,6 +368,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     String content, {
     String? ImageUrl,
     String? location,
+    String? rule,
     DateTime? timestamp,
     //String? category,
     required int category,
@@ -292,6 +381,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       'ImageUrl': ImageUrl ?? '', // إذا لم يتم اختيار صورة
       'location': location ?? '', // إذا لم يتم إدخال موقع
       'category': category,
+      'rule':rule??'',
       'times': FieldValue.serverTimestamp(),
       'timestamp': timestamp ?? '',
       // وقت النشر
@@ -314,6 +404,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void _createPost() async {
     final postText = _postController.text.trim();
     final location = _locationController.text.trim();
+    final rule = _ruleController.text.trim();
     final category = int.tryParse(_currentFilter.text.trim()) ?? 0; // ت
 
     // التحقق من الحقول الفارغة
@@ -345,7 +436,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
       ImageUrl:images, // رابط الملف المختار (اختياري)
       location: location, // الموقع المدخل (اختياري)
       category: category, // إضافة التصنيف
-      timestamp: timestamp, // التاريخ المحدد (اختياري)
+      timestamp: timestamp, 
+      rule:rule,// التاريخ المحدد (اختياري)
     );
 
     // طباعة البيانات في وحدة التحكم (لأغراض تصحيح الأخطاء)
@@ -362,6 +454,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _postController.clear();
     _locationController.clear();
     _filterByCategory.clear();
+    _ruleController.clear();
     setState(() {
       _pickedFile = null;
       _selectedDateTime = null; // إعادة تعيين الوقت
