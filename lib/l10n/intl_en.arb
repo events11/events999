@@ -1,0 +1,22 @@
+{
+    "signup" : "Sign up",
+   "Login" :"Log in",
+   
+   "Guest":"Guest",
+   "changeLanguageButton":"change Language",
+  "homePage": "HomePage",
+  "Writeyourpost"   :"What is the event...",
+  "language":"language",
+  "home": "",
+    "notifications":"Notifications",
+  "person": "person",
+  "Noewnotifications":"No new notifications .",
+  "Createapost":"Create a post",
+  "Text":" ? Text",
+  "Addalocation":"Add a location (optional)",
+ "Timeanddate" :"time and date for the event (optional)",
+ "Sharethepost":"Share the post",
+ "Addphotovideo":"Add photo/video",
+ "Chooseapictur":"picture selection",
+ "Videoselection":"Video selection"
+}

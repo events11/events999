@@ -1,0 +1,21 @@
+{
+    "signup": "التسجيل",
+    "Login": "تسجيل الدخول",
+    "Guest": "ضيف",
+  "changeLanguageButton": "تغيير اللغة",
+ "homePage": "الصفحة الرئيسية",
+ "Writeyourpost"   :"ما هو الحدث...",
+  "language":"اللغة",
+  "home": "Home",
+  "notifications": "الإشعارات",
+  "person": "شخص",
+  "Nonewnotifications":"لا توجد إشعارات جديدة.",
+  "Createapost":"إنشاء منشور",
+  "Text":"النص ؟",
+  "Addalocation":"أضف موقعًا (اختياري)",
+  "Timeanddate":"الوقت والتاريخ للحدث (اختياري)",
+  "Sharethepost":"نشر المنشور",
+  "Addphotovideo":"إضافة صورة/فيديو",
+  "Chooseapictur":"اختيار صورة",
+  "Videoselection":"اختيار الفيديو"
+}

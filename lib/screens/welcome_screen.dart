@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hello_world/generated/l10n.dart';
 import 'package:hello_world/screens/pagewa_screen.dart';
 import 'signin_screen.dart';
 import 'signup_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hello_world/generated/l10n.dart';
+import 'filtar_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String screenRoute = 'welcome_screen';
@@ -33,20 +37,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             const SizedBox(height: 30),
             Mybutton(
                 color: const Color.fromARGB(255, 210, 164, 38),
-                title: 'Log in',
+                title: S.of(context).Login,
                 onpressed: () {
                   Navigator.pushNamed(context, RegistrationScreen.screenRoute);
                 }),
             Mybutton(
               color: const Color.fromARGB(255, 210, 164, 38),
-              title: 'Sign up',
+              
+              title:  S.of(context).signup,
               onpressed: () {
                 Navigator.pushNamed(context, SignInScreen.screenRoute);
               },
             ),
             Mybutton(
                 color: const Color.fromARGB(255, 210, 164, 38),
-                title: 'Guest',
+                title: S.of(context).Guest,
                 onpressed: () {
                   Navigator.pushNamed(context, PagewaScreen.screenRoute);
                 })

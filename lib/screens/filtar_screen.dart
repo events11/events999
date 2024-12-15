@@ -1,5 +1,4 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:hello_world/generated/l10n.dart';
 import 'package:hello_world/screens/ProfilePage_screen.dart';
@@ -13,20 +12,20 @@ import 'language_screen.dart';
 import 'post_screen.dart';
 import 'package:intl/intl.dart';
 
-class PagewaScreen extends StatefulWidget {
+class FiltarScreen extends StatefulWidget {
   static const String screenRoute = 'pagewa_screen';
-  const PagewaScreen({super.key});
+  const FiltarScreen({super.key});
 
   @override
-  State<PagewaScreen> createState() => _PagewaScreenState();
+  State<FiltarScreen> createState() => _PagewaScreenState();
 }
 
-class _PagewaScreenState extends State<PagewaScreen> {
+class _PagewaScreenState extends State<FiltarScreen> {
   int _selectedIndex = 0;
   final TextEditingController _postController = TextEditingController();
   List<Map<String, dynamic>> _filteredPosts = [];
   List<Map<String, dynamic>> _allPosts = [];
-  int? _currentFilter;
+  String? _currentFilter;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -73,8 +72,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
                     final notification = doc.data() as Map<String, dynamic>;
                     return ListTile(
                       title: Text(notification['message']),
-                      subtitle:
-                          Text('في ${notification['timestamp'].toDate()}'),
+                      subtitle: Text('في ${notification['timestamp'].toDate()}'),
                     );
                   }).toList(),
                 ),
@@ -91,8 +89,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
       },
     );
   }
-
-  File? _mediaFile;
+File? _mediaFile;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,9 +116,15 @@ class _PagewaScreenState extends State<PagewaScreen> {
               );
             },
           ),
+          
         ],
       ),
-      body: IndexedStack(
+
+      /*body: Column(
+        children: [
+          Expanded(child: buildPosts()),
+        ],*/
+         body: IndexedStack(
         index: _selectedIndex,
         children: [
           LanguageScreen(),
@@ -198,67 +201,41 @@ class _PagewaScreenState extends State<PagewaScreen> {
   }
 
   // فلتر المنشورات بناءً على التصنيف المحدد
-  // تصحيح الفلترة بناءً على الفئات
-  void _filterByCategory(int category, BuildContext context) async {
+  void _filterByCategory(String category, BuildContext context) async {
     Navigator.pop(context); // إغلاق ورقة السحب
 
     try {
-      Query query;
-      switch (category) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-          query = FirebaseFirestore.instance
+      // إذا تم اختيار "تصنيف 5"، نعرض جميع المنشورات
+      final querySnapshot = (category == 'تصنيف 5')
+          ? await FirebaseFirestore.instance
               .collection('users')
-              .where('category', isEqualTo: category);
+              .orderBy('timestamp', descending: true)
+              .get()
+          : await FirebaseFirestore.instance
+              .collection('users')
+              .where('category', isEqualTo: category)
+              .orderBy('timestamp', descending: true)
+              .get();
 
-          break;
-        default:
-          query = FirebaseFirestore.instance
-              .collection('users')
-              .orderBy('times', descending: true);
-          break;
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          _filteredPosts = querySnapshot.docs.map((doc) => doc.data()).toList();
+          _currentFilter = category; // تتبع التصنيف الحالي
+        });
+      } else {
+        setState(() {
+          _filteredPosts = []; // عرض رسالة لا توجد منشورات
+        });
       }
-
-
-      // تنفيذ الاستعلام وجلب البيانات
-      QuerySnapshot querySnapshot = await query.get();
-
-      // التعامل مع النتائج
-      setState(() {
-        if (querySnapshot.docs.isNotEmpty) {
-          // تحويل المستندات إلى قائمة من الخرائط بشكل صحيح
-          _filteredPosts = querySnapshot.docs.map((doc) {
-            final data = doc.data();
-            // التأكد من أن البيانات هي من النوع الصحيح
-            if (data is Map<String, dynamic>) {
-              return data; // لا حاجة للتحويل لأن البيانات بالفعل من النوع المطلوب
-            } else {
-              return <String,
-                  dynamic>{}; // إرجاع خريطة فارغة في حالة عدم التوافق
-            }
-          }).toList();
-          _currentFilter = category; // حفظ التصنيف الحالي
-        } else {
-          _filteredPosts = [];
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('لا توجد منشورات لهذا التصنيف')),
-          );
-        }
-      });
     } catch (e) {
       print("Error filtering posts: $e");
       setState(() {
-        _filteredPosts = [];
+        _filteredPosts = []; // عرض رسالة خطأ
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ أثناء تحميل المنشورات: $e')),
-      );
     }
   }
 
-// عرض ورقة الفلتر مع التصنيفات الصحيحة
+  // عرض ورقة الفلتر مع 4 تصنيفات بالإضافة إلى تصنيف 5
   void _showFilterSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -267,25 +244,24 @@ class _PagewaScreenState extends State<PagewaScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: const Text('1'),
-              onTap: () => _filterByCategory(1, context), // تصحيح القيمة هنا
+              title: const Text('تصنيف 1'),
+              onTap: () => _filterByCategory('تصنيف 1', context),
             ),
             ListTile(
-              title: const Text('2'),
-              onTap: () => _filterByCategory(2, context),
+              title: const Text('تصنيف 2'),
+              onTap: () => _filterByCategory('تصنيف 2', context),
             ),
             ListTile(
-              title: const Text('3'),
-              onTap: () => _filterByCategory(3, context),
+              title: const Text('تصنيف 3'),
+              onTap: () => _filterByCategory('تصنيف 3', context),
             ),
             ListTile(
-              title: const Text('4'),
-              onTap: () => _filterByCategory(4, context),
+              title: const Text('تصنيف 4'),
+              onTap: () => _filterByCategory('تصنيف 4', context),
             ),
             ListTile(
               title: const Text('عرض جميع المنشورات'),
-              onTap: () => _filterByCategory(
-                  5, context), // التصنيف 5 لعرض جميع المنشورات
+              onTap: () => _filterByCategory('تصنيف 5', context), // التصنيف 5 لعرض جميع المنشورات
             ),
           ],
         );
@@ -295,7 +271,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
 
   // بناء واجهة المنشورات
   Widget buildPosts() {
-    final posts = _filteredPosts.isNotEmpty ? _filteredPosts : _filteredPosts;
+    final posts = _filteredPosts.isNotEmpty ? _filteredPosts : _allPosts;
 
     if (posts.isEmpty) {
       return const Center(child: Text('لا توجد منشورات حالياً.'));
@@ -304,7 +280,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
-          .orderBy('times', descending: true)
+          .orderBy('timestamp', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -319,7 +295,8 @@ class _PagewaScreenState extends State<PagewaScreen> {
           return const Center(child: Text('لا توجد منشورات حالياً.'));
         }
         return ListView(
-          children: _filteredPosts.map((document) {
+          children: snapshot.data!.docs.map((DocumentSnapshot document) {
+            Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
             return ListTile(
               title: Column(
                 crossAxisAlignment:
@@ -327,29 +304,27 @@ class _PagewaScreenState extends State<PagewaScreen> {
                 children: [
                   // النص (content)
                   Text(
-                    document['content'] ?? 'محتوى غير متوفر',
+                    data['content'] ?? 'محتوى غير متوفر',
                     style: const TextStyle(
                         fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 5), // مسافة صغيرة بين TEXT والرابط
                   // عرض التاريخ والوقت
                   Text(
-                    formatDate(
-                        document['timestamp']), // استدعاء دالة تنسيق التاريخ
+                    formatDate(data['timestamp']), // استدعاء دالة تنسيق التاريخ
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  if (document['location'] != null &&
-                      document['location'].isNotEmpty) ...[
+                  if (data['location'] != null && data['location'].isNotEmpty) ...[
                     GestureDetector(
                       onTap: () {
                         // منطق فتح الموقع عند الضغط على الرابط (مثلاً باستخدام URL launcher)
                       },
                       child: Text(
-                        document['location'],
+                        data['location'],
                         style: TextStyle(
                           color: Colors.blue,
                           decoration:
@@ -374,12 +349,12 @@ class _PagewaScreenState extends State<PagewaScreen> {
                     width: double.infinity, // عرض كامل للصورة
                     height: 200, // تحديد ارتفاع الصورة
                     child: Image.network(
-                      "${document['ImageUrl']}",
+                      "${data['ImageUrl']}",
                       fit: BoxFit.contain, // لتغطية المساحة بشكل مناسب
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(Icons.broken_image,
-                            color: const Color.fromARGB(255, 58, 53,
-                                53)); // عند وجود خطأ في تحميل الصورة
+                            color: const Color.fromARGB(
+                                255, 58, 53, 53)); // عند وجود خطأ في تحميل الصورة
                       },
                     ),
                   ),
@@ -414,7 +389,7 @@ class _PagewaScreenState extends State<PagewaScreen> {
   Future<String> uploadMedia(File file) async {
     Reference storageReference = FirebaseStorage.instance
         .ref()
-        .child('${DateTime.now().millisecondsSinceEpoch}');
+        .child('posts/${DateTime.now().millisecondsSinceEpoch}');
     UploadTask uploadTask = storageReference.putFile(file);
     TaskSnapshot taskSnapshot = await uploadTask;
     return await taskSnapshot.ref.getDownloadURL();
